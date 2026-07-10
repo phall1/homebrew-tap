@@ -13,10 +13,31 @@ cask "token-tach" do
     strategy :github_latest
   end
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "token-tach.app"
-  binary "#{appdir}/token-tach.app/Contents/MacOS/token-tach", target: "token-tach"
+
+  # The app is adhoc-signed (not notarized), so Gatekeeper would refuse
+  # the quarantined copy Homebrew stages. Clear the flag the same way
+  # a user would with right-click -> Open.
+  postflight do
+    system_command "/usr/bin/xattr",
+                   args: ["-dr", "com.apple.quarantine", "#{appdir}/token-tach.app"],
+                   sudo: false
+  end
+
+  # A shim, not a symlink: executing a signed bundle's binary through a
+  # symlink outside the bundle gets killed by amfid (SIGKILL).
+  binary "#{staged_path}/token-tach-shim", target: "token-tach"
+
+  preflight do
+    shim = staged_path/"token-tach-shim"
+    shim.write <<~SH
+      #!/bin/sh
+      exec "#{appdir}/token-tach.app/Contents/MacOS/token-tach" "$@"
+    SH
+    shim.chmod 0o755
+  end
 
   zap trash: [
     "~/.config/token-tach",
@@ -24,14 +45,15 @@ cask "token-tach" do
   ]
 
   caveats <<~EOS
-    token-tach is a menu-bar accessory app: it has no Dock icon.
-    Launch it with `open -a token-tach` (or from Spotlight), then look
-    for the glance in the menu bar — left-click for the instrument,
-    right-click for the menu (Open Tach / Dashboard / Settings / Quit).
+    token-tach is a menu-bar accessory app: no Dock icon. Launch it with
+      open -a token-tach
+    then look for the glance in the menu bar. Left-click for the
+    instrument, right-click for the menu (Open Tach / Dashboard /
+    Settings / Quit).
 
-    The `token-tach` command is linked too, for `--json` and
-    `--statusline`.
+    The `token-tach` command is linked too, for `--json` / `--statusline`.
 
-    This build is adhoc-signed, not notarized.
+    This build is adhoc-signed and NOT notarized: the cask clears the
+    quarantine flag for you, which is why macOS does not prompt.
   EOS
 end
