@@ -13,16 +13,9 @@ cask "token-tach" do
     strategy :github_latest
   end
 
-  depends_on macos: ">= :big_sur"
+  depends_on macos: :big_sur
 
   app "token-tach.app"
-
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/token-tach.app"],
-                   sudo: false
-  end
-
   binary "#{staged_path}/token-tach-shim", target: "token-tach"
 
   preflight do
@@ -31,7 +24,13 @@ cask "token-tach" do
       #!/bin/sh
       exec "#{appdir}/token-tach.app/Contents/MacOS/token-tach" "$@"
     SH
-    shim.chmod 0o755
+    shim.chmod 0755
+  end
+
+  postflight do
+    system_command "/usr/bin/xattr",
+                   args: ["-dr", "com.apple.quarantine", "#{appdir}/token-tach.app"],
+                   sudo: false
   end
 
   zap trash: [
