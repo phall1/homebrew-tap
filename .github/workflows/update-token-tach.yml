@@ -3,6 +3,9 @@ name: Update Token Tach
 on:
   repository_dispatch:
     types: [token-tach-release]
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
 
 permissions:
   contents: write
@@ -13,10 +16,29 @@ jobs:
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
-      - name: Render cask
+      - name: Resolve release
         env:
-          VERSION: ${{ github.event.client_payload.version }}
-          SHA256: ${{ github.event.client_payload.sha256 }}
+          DISPATCH_VERSION: ${{ github.event.client_payload.version }}
+          DISPATCH_SHA256: ${{ github.event.client_payload.sha256 }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$DISPATCH_VERSION" && -n "$DISPATCH_SHA256" ]]; then
+            version="$DISPATCH_VERSION"
+            sha256="$DISPATCH_SHA256"
+          else
+            tag="$(curl --fail --silent --show-error --location \
+              https://api.github.com/repos/phall1/token-tach/releases/latest | jq -r .tag_name)"
+            version="${tag#v}"
+            asset="https://github.com/phall1/token-tach/releases/download/$tag/token-tach-$version-universal2.dmg"
+            curl --fail --silent --show-error --location "$asset" --output "$RUNNER_TEMP/token-tach.dmg"
+            sha256="$(sha256sum "$RUNNER_TEMP/token-tach.dmg" | cut -d ' ' -f 1)"
+          fi
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$sha256" =~ ^[0-9a-f]{64}$ ]]
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          echo "SHA256=$sha256" >> "$GITHUB_ENV"
+
+      - name: Render cask
         run: |
           set -euo pipefail
           [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
@@ -57,5 +79,5 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
         with:
-          commit_message: "Brew cask update for Token Tach v${{ github.event.client_payload.version }}"
+          commit_message: "Brew cask update for Token Tach"
           file_pattern: Casks/token-tach.rb
