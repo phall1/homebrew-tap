@@ -30,7 +30,11 @@ jobs:
               https://api.github.com/repos/phall1/token-tach/releases/latest | jq -r .tag_name)"
             version="${tag#v}"
             asset="https://github.com/phall1/token-tach/releases/download/$tag/token-tach-$version-universal2.dmg"
-            curl --fail --silent --show-error --location "$asset" --output "$RUNNER_TEMP/token-tach.dmg"
+            if ! curl --fail --silent --show-error --location "$asset" --output "$RUNNER_TEMP/token-tach.dmg"; then
+              echo "Latest release $tag predates the notarized Universal 2 pipeline; nothing to update."
+              echo "SKIP_UPDATE=1" >> "$GITHUB_ENV"
+              exit 0
+            fi
             sha256="$(sha256sum "$RUNNER_TEMP/token-tach.dmg" | cut -d ' ' -f 1)"
           fi
           [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
@@ -39,6 +43,7 @@ jobs:
           echo "SHA256=$sha256" >> "$GITHUB_ENV"
 
       - name: Render cask
+        if: env.SKIP_UPDATE != '1'
         run: |
           set -euo pipefail
           [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
@@ -78,6 +83,7 @@ jobs:
           RUBY
 
       - uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
+        if: env.SKIP_UPDATE != '1'
         with:
           commit_message: "Brew cask update for Token Tach"
           file_pattern: Casks/token-tach.rb
