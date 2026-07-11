@@ -1,0 +1,65 @@
+name: Update ghui
+
+on:
+  repository_dispatch:
+    types: [ghui-release]
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Render formula
+        env:
+          VERSION: ${{ github.event.client_payload.version }}
+          TAG: ${{ github.event.client_payload.tag }}
+          DARWIN_ARM64_SHA256: ${{ github.event.client_payload.darwin_arm64_sha256 }}
+          DARWIN_X64_SHA256: ${{ github.event.client_payload.darwin_x64_sha256 }}
+          LINUX_ARM64_SHA256: ${{ github.event.client_payload.linux_arm64_sha256 }}
+          LINUX_X64_SHA256: ${{ github.event.client_payload.linux_x64_sha256 }}
+        run: |
+          mkdir -p Formula
+          cat > Formula/ghui.rb <<RUBY
+          class Ghui < Formula
+            desc "Terminal UI for GitHub pull requests, issues, diffs, and Actions"
+            homepage "https://github.com/phall1/ghui"
+            version "${VERSION}"
+
+            on_macos do
+              if Hardware::CPU.arm?
+                url "https://github.com/phall1/ghui/releases/download/${TAG}/ghui-darwin-arm64.tar.gz"
+                sha256 "${DARWIN_ARM64_SHA256}"
+              else
+                url "https://github.com/phall1/ghui/releases/download/${TAG}/ghui-darwin-x64.tar.gz"
+                sha256 "${DARWIN_X64_SHA256}"
+              end
+            end
+
+            on_linux do
+              if Hardware::CPU.arm?
+                url "https://github.com/phall1/ghui/releases/download/${TAG}/ghui-linux-arm64.tar.gz"
+                sha256 "${LINUX_ARM64_SHA256}"
+              else
+                url "https://github.com/phall1/ghui/releases/download/${TAG}/ghui-linux-x64.tar.gz"
+                sha256 "${LINUX_X64_SHA256}"
+              end
+            end
+
+            def install
+              bin.install "ghui"
+            end
+
+            test do
+              assert_match version.to_s, shell_output("#{bin}/ghui --version")
+            end
+          end
+          RUBY
+
+      - uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "Brew formula update for ghui version ${{ github.event.client_payload.tag }}"
+          file_pattern: Formula/ghui.rb
