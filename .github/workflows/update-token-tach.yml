@@ -31,7 +31,7 @@ jobs:
             version="${tag#v}"
             asset="https://github.com/phall1/token-tach/releases/download/$tag/token-tach-$version-universal2.dmg"
             if ! curl --fail --silent --show-error --location "$asset" --output "$RUNNER_TEMP/token-tach.dmg"; then
-              echo "Latest release $tag predates the notarized Universal 2 pipeline; nothing to update."
+              echo "Latest release $tag predates the Universal 2 pipeline; nothing to update."
               echo "SKIP_UPDATE=1" >> "$GITHUB_ENV"
               exit 0
             fi
@@ -67,8 +67,24 @@ jobs:
 
             depends_on macos: ">= :big_sur"
 
-            app "Token Tach.app"
-            binary "#{appdir}/Token Tach.app/Contents/MacOS/token-tach", target: "token-tach"
+            app "token-tach.app"
+
+            postflight do
+              system_command "/usr/bin/xattr",
+                             args: ["-dr", "com.apple.quarantine", "#{appdir}/token-tach.app"],
+                             sudo: false
+            end
+
+            binary "#{staged_path}/token-tach-shim", target: "token-tach"
+
+            preflight do
+              shim = staged_path/"token-tach-shim"
+              shim.write <<~SH
+                #!/bin/sh
+                exec "#{appdir}/token-tach.app/Contents/MacOS/token-tach" "\$@"
+              SH
+              shim.chmod 0o755
+            end
 
             zap trash: [
               "~/.config/token-tach",
@@ -78,6 +94,9 @@ jobs:
             caveats <<~EOS
               Token Tach is a menu-bar accessory app with no Dock icon.
               Launch it from Applications, then use its menu-bar item.
+
+              This build is ad-hoc signed. The cask clears its quarantine flag
+              so macOS can launch it without a Developer ID certificate.
             EOS
           end
           RUBY
