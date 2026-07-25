@@ -1,6 +1,6 @@
 cask "token-tach" do
-  version "0.5.0"
-  sha256 "5f326f40333cdc1ef4ca2fd4c9f2e45709dffa0284710a99c6c02792f2d66f5f"
+  version "0.6.0"
+  sha256 "24f8756d7f84c6343c1fba0f2f6bd1b1f19aaee9222f5405679e2caa30121328"
 
   url "https://github.com/phall1/token-tach/releases/download/v#{version}/token-tach-#{version}-universal2.dmg",
       verified: "github.com/phall1/token-tach/"
