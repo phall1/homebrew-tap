@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: tap-updates
+  group: update-phux
   cancel-in-progress: false
 
 jobs:
@@ -67,7 +67,5 @@ jobs:
           ruby -c Formula/phux.rb
           echo "TAG=$tag" >> "$GITHUB_ENV"
 
-      - uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
-        with:
-          commit_message: "Brew formula update for phux ${{ env.TAG }}"
-          file_pattern: Formula/phux.rb
+      - name: Commit update with race-safe retry
+        run: bash .github/scripts/commit-update.sh Formula/phux.rb "Brew formula update for phux $TAG"
