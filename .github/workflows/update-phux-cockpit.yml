@@ -1,0 +1,66 @@
+name: Update Phux Cockpit
+
+on:
+  repository_dispatch:
+    types: [phux-cockpit-release]
+  workflow_dispatch:
+  schedule:
+    - cron: "47 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-phux-cockpit
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Resolve latest release and verify archive
+        run: |
+          set -euo pipefail
+          release="$RUNNER_TEMP/release.json"
+          gh api repos/phall1/phux-cockpit/releases/latest > "$release"
+          tag="$(jq -er '.tag_name' "$release")"
+          [[ "$tag" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]
+          version="${BASH_REMATCH[1]}"
+          archive="phux-cockpit-$version-macos-arm64.zip"
+
+          asset_url() {
+            local name="$1" count url
+            count="$(jq --arg name "$name" '[.assets[] | select(.name == $name)] | length' "$release")" || return 1
+            [[ "$count" == 1 ]] || return 1
+            url="$(jq -er --arg name "$name" '.assets[] | select(.name == $name) | .browser_download_url' "$release")" || return 1
+            [[ "$url" == "https://github.com/phall1/phux-cockpit/releases/download/$tag/$name" ]] || return 1
+            printf '%s\n' "$url"
+          }
+
+          archive_url="$(asset_url "$archive")"
+          sums_url="$(asset_url SHA256SUMS)"
+          curl --fail --silent --show-error --location "$archive_url" --output "$RUNNER_TEMP/$archive"
+          curl --fail --silent --show-error --location "$sums_url" --output "$RUNNER_TEMP/SHA256SUMS"
+          actual="$(sha256sum "$RUNNER_TEMP/$archive" | cut -d ' ' -f 1)"
+          expected="$(awk -v file="$archive" '$2 == file { print $1 }' "$RUNNER_TEMP/SHA256SUMS")"
+          [[ "$actual" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$expected" =~ ^[0-9a-f]{64}$ ]]
+          [[ "$actual" == "$expected" ]]
+
+          notarized=false
+          if jq -er '.body // ""' "$release" | grep -Fq 'This release is Developer ID signed and Apple-notarized.'; then
+            notarized=true
+          fi
+          bash .github/scripts/gen-phux-cockpit-cask.sh "$tag" "$actual" "$notarized" Casks/phux-cockpit.rb
+          ruby -c Casks/phux-cockpit.rb
+          {
+            echo "TAG=$tag"
+            echo "NOTARIZED=$notarized"
+          } >> "$GITHUB_ENV"
+
+      - name: Commit update with race-safe retry
+        run: bash .github/scripts/commit-update.sh Casks/phux-cockpit.rb "Brew cask update for Phux Cockpit $TAG"
