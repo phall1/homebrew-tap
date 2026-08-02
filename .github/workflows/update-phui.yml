@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: tap-updates
+  group: update-phui
   cancel-in-progress: false
 
 jobs:
@@ -102,7 +102,5 @@ jobs:
           RUBY
           ruby -c Formula/phui.rb
 
-      - uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
-        with:
-          commit_message: "Brew formula update for phui ${{ env.TAG }}"
-          file_pattern: Formula/phui.rb
+      - name: Commit update with race-safe retry
+        run: bash .github/scripts/commit-update.sh Formula/phui.rb "Brew formula update for phui $TAG"
