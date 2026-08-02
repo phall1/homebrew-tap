@@ -1,7 +1,11 @@
 class Phui < Formula
   desc "Terminal UI for GitHub pull requests, issues, diffs, and Actions"
   homepage "https://github.com/phall1/phui"
-  version "0.12.0"
+
+  livecheck do
+    url :stable
+    strategy :github_latest
+  end
 
   on_macos do
     if Hardware::CPU.arm?

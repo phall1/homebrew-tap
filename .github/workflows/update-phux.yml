@@ -1,0 +1,73 @@
+name: Update phux
+
+on:
+  repository_dispatch:
+    types: [phux-release]
+  workflow_dispatch:
+  schedule:
+    - cron: "37 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tap-updates
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Resolve latest release and verify available artifacts
+        run: |
+          set -euo pipefail
+          release="$RUNNER_TEMP/release.json"
+          gh api repos/phall1/phux/releases/latest > "$release"
+          tag="$(jq -er '.tag_name' "$release")"
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+
+          dist="$RUNNER_TEMP/dist"
+          mkdir -p "$dist"
+          found=0
+          for target in \
+            aarch64-apple-darwin \
+            x86_64-unknown-linux-gnu \
+            aarch64-unknown-linux-gnu; do
+            name="phux-$tag-$target.tar.gz"
+            count="$(jq --arg name "$name" '[.assets[] | select(.name == $name)] | length' "$release")"
+            if [[ "$count" == 0 ]]; then
+              echo "Latest release $tag has no $target artifact; preserving phux's partial-release support."
+              continue
+            fi
+            [[ "$count" == 1 ]]
+            url="$(jq -er --arg name "$name" '.assets[] | select(.name == $name) | .browser_download_url' "$release")"
+            [[ "$url" == "https://github.com/phall1/phux/releases/download/$tag/$name" ]]
+            curl --fail --silent --show-error --location "$url" --output "$dist/$name"
+            actual="$(sha256sum "$dist/$name" | cut -d ' ' -f 1)"
+            [[ "$actual" =~ ^[0-9a-f]{64}$ ]]
+
+            sidecar="$name.sha256"
+            [[ "$(jq --arg name "$sidecar" '[.assets[] | select(.name == $name)] | length' "$release")" == 1 ]]
+            sidecar_url="$(jq -er --arg name "$sidecar" '.assets[] | select(.name == $name) | .browser_download_url' "$release")"
+            [[ "$sidecar_url" == "https://github.com/phall1/phux/releases/download/$tag/$sidecar" ]]
+            curl --fail --silent --show-error --location "$sidecar_url" --output "$dist/$sidecar.upstream"
+            expected="$(cut -d ' ' -f 1 < "$dist/$sidecar.upstream")"
+            [[ "$expected" =~ ^[0-9a-f]{64}$ ]]
+            [[ "$actual" == "$expected" ]]
+            printf '%s  %s\n' "$actual" "$name" > "$dist/$sidecar"
+            found=$((found + 1))
+          done
+          (( found > 0 ))
+
+          bash .github/scripts/gen-phux-formula.sh "$tag" "$dist" Formula/phux.rb
+          ruby -c Formula/phux.rb
+          echo "TAG=$tag" >> "$GITHUB_ENV"
+
+      - uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
+        with:
+          commit_message: "Brew formula update for phux ${{ env.TAG }}"
+          file_pattern: Formula/phux.rb
