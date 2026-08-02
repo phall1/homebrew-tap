@@ -1,0 +1,113 @@
+name: Update phbv
+
+on:
+  repository_dispatch:
+    types: [phbv-release]
+  workflow_dispatch:
+  schedule:
+    - cron: "27 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tap-updates
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Resolve latest release and checksums
+        run: |
+          set -euo pipefail
+          release="$RUNNER_TEMP/release.json"
+          gh api repos/phall1/phbv/releases/latest > "$release"
+          tag="$(jq -er '.tag_name' "$release")"
+          [[ "$tag" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]
+          version="${BASH_REMATCH[1]}"
+
+          asset_sha256() {
+            local name="$1" url destination digest count
+            count="$(jq --arg name "$name" '[.assets[] | select(.name == $name)] | length' "$release")" || return 1
+            [[ "$count" == 1 ]] || return 1
+            url="$(jq -er --arg name "$name" '.assets[] | select(.name == $name) | .browser_download_url' "$release")" || return 1
+            [[ "$url" == "https://github.com/phall1/phbv/releases/download/$tag/$name" ]] || return 1
+            destination="$RUNNER_TEMP/$name"
+            curl --fail --silent --show-error --location "$url" --output "$destination" || return 1
+            digest="$(sha256sum "$destination" | cut -d ' ' -f 1)" || return 1
+            [[ "$digest" =~ ^[0-9a-f]{64}$ ]] || return 1
+            printf '%s\n' "$digest"
+          }
+
+          darwin_amd64_sha256="$(asset_sha256 phbv_darwin_amd64.tar.gz)"
+          darwin_arm64_sha256="$(asset_sha256 phbv_darwin_arm64.tar.gz)"
+          linux_amd64_sha256="$(asset_sha256 phbv_linux_amd64.tar.gz)"
+          linux_arm64_sha256="$(asset_sha256 phbv_linux_arm64.tar.gz)"
+          for digest in "$darwin_amd64_sha256" "$darwin_arm64_sha256" "$linux_amd64_sha256" "$linux_arm64_sha256"; do
+            [[ "$digest" =~ ^[0-9a-f]{64}$ ]]
+          done
+          {
+            echo "TAG=$tag"
+            echo "VERSION=$version"
+            echo "DARWIN_AMD64_SHA256=$darwin_amd64_sha256"
+            echo "DARWIN_ARM64_SHA256=$darwin_arm64_sha256"
+            echo "LINUX_AMD64_SHA256=$linux_amd64_sha256"
+            echo "LINUX_ARM64_SHA256=$linux_arm64_sha256"
+          } >> "$GITHUB_ENV"
+
+      - name: Render cask
+        run: |
+          set -euo pipefail
+          cat > Casks/phbv.rb <<RUBY
+          # This file is maintained by .github/workflows/update-phbv.yml.
+          cask "phbv" do
+            version "${VERSION}"
+
+            on_macos do
+              on_arm do
+                sha256 "${DARWIN_ARM64_SHA256}"
+                url "https://github.com/phall1/phbv/releases/download/v#{version}/phbv_darwin_arm64.tar.gz"
+              end
+              on_intel do
+                sha256 "${DARWIN_AMD64_SHA256}"
+                url "https://github.com/phall1/phbv/releases/download/v#{version}/phbv_darwin_amd64.tar.gz"
+              end
+            end
+            on_linux do
+              on_arm do
+                sha256 "${LINUX_ARM64_SHA256}"
+                url "https://github.com/phall1/phbv/releases/download/v#{version}/phbv_linux_arm64.tar.gz"
+              end
+              on_intel do
+                sha256 "${LINUX_AMD64_SHA256}"
+                url "https://github.com/phall1/phbv/releases/download/v#{version}/phbv_linux_amd64.tar.gz"
+              end
+            end
+
+            name "phbv"
+            desc "Terminal UI for beads (bd) issue tracking"
+            homepage "https://github.com/phall1/phbv"
+
+            livecheck do
+              url :url
+              strategy :github_latest
+            end
+
+            binary "phbv"
+
+            postflight do
+              system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/phbv"] if OS.mac?
+            end
+          end
+          RUBY
+          ruby -c Casks/phbv.rb
+
+      - uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7
+        with:
+          commit_message: "Brew cask update for phbv ${{ env.TAG }}"
+          file_pattern: Casks/phbv.rb
