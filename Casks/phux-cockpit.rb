@@ -1,6 +1,6 @@
 cask "phux-cockpit" do
   version "0.1.0"
-  sha256 "123ff27926b2441d4848380db13a66cb93f8a5fae89af31cbca6562d781606d1"
+  sha256 "d1febee740a260f75c5946f25993e90c26ab8f06c577bae10ff81d1b84c3e753"
 
   url "https://github.com/phall1/phux-cockpit/releases/download/v#{version}/phux-cockpit-#{version}-macos-arm64.zip",
       verified: "github.com/phall1/phux-cockpit/"
