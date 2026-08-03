@@ -27,4 +27,25 @@ if bash "$root/.github/scripts/gen-phux-cockpit-cask.sh" "v$version" not-a-check
   exit 1
 fi
 
+for notarized_mode in false true; do
+  generated="$tmp/phux-cockpit-0.3.0-$notarized_mode.rb"
+  bash "$root/.github/scripts/gen-phux-cockpit-cask.sh" \
+    v0.3.0 \
+    0000000000000000000000000000000000000000000000000000000000000000 \
+    "$notarized_mode" \
+    "$generated" >/dev/null
+  grep -Fq 'desc "Native spatial runtime for terminal and web surfaces"' "$generated"
+  grep -Fq 'Phux Cockpit provides native terminal tabs, split panes, and a focused' "$generated"
+  if grep -Fq 'depends_on formula: "phall1/tap/phux"' "$generated"; then
+    echo "v0.3.0 cask unexpectedly depends on phux" >&2
+    exit 1
+  fi
+  if [[ "$notarized_mode" == false ]]; then
+    grep -Fq '  postflight do' "$generated"
+  elif grep -Fq '  postflight do' "$generated"; then
+    echo "notarized v0.3.0 cask unexpectedly clears quarantine" >&2
+    exit 1
+  fi
+done
+
 echo "Phux Cockpit cask regeneration check passed"
