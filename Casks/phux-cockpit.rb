@@ -1,7 +1,7 @@
 # This file is maintained by .github/workflows/update-phux-cockpit.yml.
 cask "phux-cockpit" do
-  version "0.4.0"
-  sha256 "c7a78ae856ce596c762c3cf96bf74cada3ca99bdeb788ff4dc0de59d6a7be1df"
+  version "0.5.0"
+  sha256 "d6891c2f4465293da5a2e0818421aa6fd8a3c33e2eb5555a294b7b60aabaf384"
 
   url "https://github.com/phall1/phux-cockpit/releases/download/v#{version}/phux-cockpit-#{version}-macos-arm64.zip",
       verified: "github.com/phall1/phux-cockpit/"
