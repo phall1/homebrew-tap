@@ -1,7 +1,7 @@
 # Generated from tools/token-tach.json. Do not edit by hand.
 cask "token-tach" do
-  version "0.9.5"
-  sha256 "1a3f4a82657c63855ea911eb03bca5f62a9478ce2ce2aa6483cbc4f76f6fd5cc"
+  version "0.9.6"
+  sha256 "9182a71b105469ed7484157d022b7c620ed29e64b75655807e69d4bca8628d77"
 
   url "https://github.com/phall1/token-tach/releases/download/v#{version}/token-tach-#{version}-universal2.dmg",
       verified: "github.com/phall1/token-tach/"
