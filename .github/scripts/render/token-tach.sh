@@ -1,7 +1,15 @@
+#!/usr/bin/env bash
+# Renders Casks/token-tach.rb from the values resolve-release.sh exported.
+set -euo pipefail
+
+out="${1:?usage: token-tach.sh <out-file>}"
+: "${VERSION:?}" "${DMG_SHA256:?}"
+
+cat > "$out" <<RUBY
 # Generated from tools/token-tach.json. Do not edit by hand.
 cask "token-tach" do
-  version "0.9.5"
-  sha256 "1a3f4a82657c63855ea911eb03bca5f62a9478ce2ce2aa6483cbc4f76f6fd5cc"
+  version "${VERSION}"
+  sha256 "${DMG_SHA256}"
 
   url "https://github.com/phall1/token-tach/releases/download/v#{version}/token-tach-#{version}-universal2.dmg",
       verified: "github.com/phall1/token-tach/"
@@ -23,7 +31,7 @@ cask "token-tach" do
     shim = staged_path/"token-tach-shim"
     shim.write <<~SH
       #!/bin/sh
-      exec "#{appdir}/token-tach.app/Contents/MacOS/token-tach" "$@"
+      exec "#{appdir}/token-tach.app/Contents/MacOS/token-tach" "\$@"
     SH
     shim.chmod 0755
   end
@@ -47,3 +55,4 @@ cask "token-tach" do
     so macOS can launch it without a Developer ID certificate.
   EOS
 end
+RUBY

@@ -27,7 +27,7 @@ esac
 
 emit() {
   cat <<EOF
-# This file is maintained by .github/workflows/update-phux-cockpit.yml.
+# Generated from tools/phux-cockpit.json. Do not edit by hand.
 cask "phux-cockpit" do
   version "${version}"
   sha256 "${sha256}"

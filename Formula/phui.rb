@@ -1,3 +1,4 @@
+# Generated from tools/phui.json. Do not edit by hand.
 class Phui < Formula
   desc "Terminal UI for GitHub pull requests, issues, diffs, and Actions"
   homepage "https://github.com/phall1/phui"
