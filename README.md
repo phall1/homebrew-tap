@@ -112,7 +112,8 @@ bash .github/scripts/verify-renders.sh                   # every package still r
 bash .github/scripts/test/all.sh                         # selection, verification, add-a-package
 ```
 
-`verify-renders.sh` re-renders every package from its current release and diffs
-against what is committed. It runs in CI on every push and pull request: a red
-run means either a generated file was hand-edited, or a release moved and no
-update has landed yet.
+`verify-renders.sh` re-renders every package from the release pinned in the
+committed formula or cask and diffs the result. It runs in CI on every push and
+pull request: a red run means a generated file was hand-edited or a pinned
+release's assets changed. The scheduled update workflow separately discovers
+new releases.

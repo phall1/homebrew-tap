@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
-# Resolve a tool's latest GitHub release and verify every artifact the tap is
-# about to reference.
+# Resolve a tool's GitHub release and verify every artifact the tap is about to
+# reference. The default is the latest release; callers may pin a tag when
+# reproducing an already committed formula or cask.
 #
 # THIS IS THE ONLY COPY OF THE VERIFICATION RULES. It used to be hand-written
 # once per tool, which meant a new tool could silently ship without the URL pin
@@ -23,7 +24,7 @@
 # the same three checks — a checksum you fetched from an unpinned URL proves
 # nothing.
 #
-# Usage: resolve-release.sh <manifest.json> <work-dir>
+# Usage: resolve-release.sh <manifest.json> <work-dir> [tag]
 #
 # Writes:      <work-dir>/release.json      the raw release payload
 #              <work-dir>/dist/<asset>      each downloaded artifact
@@ -39,6 +40,7 @@ set -euo pipefail
 
 manifest="${1:?usage: resolve-release.sh <manifest.json> <work-dir>}"
 work="${2:?usage: resolve-release.sh <manifest.json> <work-dir>}"
+requested_tag="${3:-}"
 
 command -v jq >/dev/null || { echo "error: jq is required" >&2; exit 1; }
 
@@ -64,11 +66,23 @@ envfile="$work/env"
 mkdir -p "$dist"
 : > "$envfile"
 
-gh api "repos/$repo/releases/latest" > "$release"
+if [[ -n "$requested_tag" ]]; then
+	[[ "$requested_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+		echo "error: $tool: requested release tag '$requested_tag' is not vMAJOR.MINOR.PATCH" >&2
+		exit 1
+	}
+	gh api "repos/$repo/releases/tags/$requested_tag" > "$release"
+else
+	gh api "repos/$repo/releases/latest" > "$release"
+fi
 
 tag="$(jq -er '.tag_name' "$release")"
 [[ "$tag" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]] || {
-	echo "error: $tool: latest release tag '$tag' is not vMAJOR.MINOR.PATCH" >&2
+	echo "error: $tool: release tag '$tag' is not vMAJOR.MINOR.PATCH" >&2
+	exit 1
+}
+[[ -z "$requested_tag" || "$tag" == "$requested_tag" ]] || {
+	echo "error: $tool: requested release $requested_tag resolved to $tag" >&2
 	exit 1
 }
 version="${BASH_REMATCH[1]}"

@@ -12,9 +12,8 @@ permissions:
 jobs:
   reproduce:
     # Proves the committed formulas and casks are exactly what the generators
-    # produce from the current releases. A red run here means either someone
-    # hand-edited a generated file, or a release moved and no update has landed
-    # yet — both worth knowing before `brew install` finds out for you.
+    # produce from their pinned releases. A red run here means someone hand-edited
+    # a generated file or a pinned release's assets moved.
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}

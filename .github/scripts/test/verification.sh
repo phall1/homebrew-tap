@@ -22,8 +22,8 @@ expect_fail() {
 }
 
 expect_pass() {
-	local label="$1" manifest="$2"
-	if bash .github/scripts/resolve-release.sh "$manifest" "$work/pass-$(basename "$manifest" .json)" >/dev/null 2>&1; then
+	local label="$1" manifest="$2" tag="${3:-}"
+	if bash .github/scripts/resolve-release.sh "$manifest" "$work/pass-$(basename "$manifest" .json)" "$tag" >/dev/null 2>&1; then
 		echo "ok   $label"
 	else
 		echo "FAIL $label — resolver refused a legitimate release"; FAILED=1
@@ -79,5 +79,6 @@ cat > tools/zzz-neg.json <<'JSON'
 }
 JSON
 expect_pass "a real release with matching sidecars passes" tools/zzz-neg.json
+expect_pass "a pinned release with matching sidecars passes" tools/zzz-neg.json v0.14.1
 
 exit "$FAILED"

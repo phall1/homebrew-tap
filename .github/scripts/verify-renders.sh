@@ -2,15 +2,13 @@
 #
 # Prove the generated pipeline reproduces what is committed.
 #
-# For every tools/*.json: resolve the tool's current latest release, render it
-# to a temporary file, and diff against the committed formula or cask. A clean
-# run means the generic path and the five hand-written workflows it replaced
-# agree byte for byte on live data — which is the only evidence worth having
-# that the migration changed nothing.
+# For every tools/*.json: resolve the release pinned by the committed formula or
+# cask, render it to a temporary file, and diff the two. Pinning makes validation
+# deterministic when another tool publishes a release during the run; finding
+# newer releases remains the update workflow's job.
 #
-# It stays useful after the migration for a different reason: a run that differs
-# means either the tap drifted from its own generator, or a release moved and
-# nothing has picked it up yet. Both are worth a red build.
+# A run that differs means the tap drifted from its generator or the pinned
+# release's assets changed. Both are worth a red build.
 #
 # Usage: verify-renders.sh [tool ...]     (default: every manifest)
 
@@ -33,8 +31,18 @@ failed=()
 for tool in "${tools[@]}"; do
 	path="$(jq -er '.path' "tools/$tool.json")"
 	rendered="$work/$tool.rb"
+	tag="$(grep -Eom1 'releases/download/v[0-9]+\.[0-9]+\.[0-9]+/' "$path" | cut -d/ -f3 || true)"
+	if [[ -z "$tag" ]]; then
+		version="$(grep -Eom1 '^[[:space:]]*version "[0-9]+\.[0-9]+\.[0-9]+"' "$path" | cut -d'"' -f2 || true)"
+		[[ -n "$version" ]] && tag="v$version"
+	fi
+	if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+		echo "FAIL $tool — could not determine the pinned release tag from $path" >&2
+		failed+=("$tool")
+		continue
+	fi
 
-	if ! bash .github/scripts/update-tool.sh "$tool" "$rendered" >/dev/null; then
+	if ! bash .github/scripts/update-tool.sh "$tool" "$rendered" "$tag" >/dev/null; then
 		echo "FAIL $tool — render failed" >&2
 		failed+=("$tool")
 		continue
