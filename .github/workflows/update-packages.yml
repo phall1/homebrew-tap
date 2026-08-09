@@ -25,10 +25,19 @@ on:
         required: false
         type: string
   schedule:
-    # Hourly. The dispatches above make releases land immediately; this is the
-    # safety net for a dispatch that never arrives (an expired tap token, a
-    # release published by hand).
-    - cron: "7 * * * *"
+    # Every fifteen minutes, so a repository does not need a credential to get
+    # its formula updated promptly.
+    #
+    # A dispatch only ever bought latency: this workflow re-resolves the release
+    # and recomputes every digest itself, and ignores whatever the payload said.
+    # Trading instant-but-authenticated for quarter-hourly-and-anonymous lets a
+    # source repository drop its tap token entirely — phui has, and the others
+    # can whenever they like, since the dispatch inputs still work.
+    #
+    # Each run is a no-op when nothing moved (about fifteen seconds per tool,
+    # and commit-update.sh exits early when the rendered file is unchanged), so
+    # the extra frequency costs very little.
+    - cron: "*/15 * * * *"
 
 permissions:
   contents: write
