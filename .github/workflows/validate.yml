@@ -10,6 +10,21 @@ permissions:
   contents: read
 
 jobs:
+  reproduce:
+    # Proves the committed formulas and casks are exactly what the generators
+    # produce from the current releases. A red run here means either someone
+    # hand-edited a generated file, or a release moved and no update has landed
+    # yet — both worth knowing before `brew install` finds out for you.
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - name: Every package reproduces byte for byte
+        run: bash .github/scripts/verify-renders.sh
+      - name: Selection, verification, and add-a-package suites
+        run: bash .github/scripts/test/all.sh
+
   test-bot:
     runs-on: macos-15
     steps:

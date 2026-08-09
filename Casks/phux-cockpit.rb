@@ -1,4 +1,4 @@
-# This file is maintained by .github/workflows/update-phux-cockpit.yml.
+# Generated from tools/phux-cockpit.json. Do not edit by hand.
 cask "phux-cockpit" do
   version "0.7.1"
   sha256 "7b84c5fcf1a860a4ec820d90d18248296f297b59f7aba1eaecdd58a1be102efc"

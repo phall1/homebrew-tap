@@ -1,0 +1,12 @@
+{
+	"tool": "phui",
+	"repo": "phall1/phui",
+	"path": "Formula/phui.rb",
+	"message": "Brew formula update for phui",
+	"assets": {
+		"DARWIN_ARM64": { "name": "phui-darwin-arm64.tar.gz" },
+		"DARWIN_X64": { "name": "phui-darwin-x64.tar.gz" },
+		"LINUX_ARM64": { "name": "phui-linux-arm64.tar.gz" },
+		"LINUX_X64": { "name": "phui-linux-x64.tar.gz" }
+	}
+}

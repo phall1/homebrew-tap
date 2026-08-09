@@ -1,0 +1,9 @@
+{
+	"tool": "token-tach",
+	"repo": "phall1/token-tach",
+	"path": "Casks/token-tach.rb",
+	"message": "Brew cask update for token-tach",
+	"assets": {
+		"DMG": { "name": "token-tach-{version}-universal2.dmg" }
+	}
+}

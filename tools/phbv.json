@@ -1,0 +1,12 @@
+{
+	"tool": "phbv",
+	"repo": "phall1/phbv",
+	"path": "Casks/phbv.rb",
+	"message": "Brew cask update for phbv",
+	"assets": {
+		"DARWIN_AMD64": { "name": "phbv_darwin_amd64.tar.gz" },
+		"DARWIN_ARM64": { "name": "phbv_darwin_arm64.tar.gz" },
+		"LINUX_AMD64": { "name": "phbv_linux_amd64.tar.gz" },
+		"LINUX_ARM64": { "name": "phbv_linux_arm64.tar.gz" }
+	}
+}
