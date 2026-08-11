@@ -8,6 +8,7 @@ brew tap phall1/tap
 
 | Package | What |
 |---|---|
+| [`blackbird`](Formula/blackbird.rb) | Durable local-first coordination for human and AI agent work |
 | [`phux-cockpit`](Casks/phux-cockpit.rb) | Native companion for the phux terminal control plane |
 | [`token-tach`](Casks/token-tach.rb) | Menu-bar tachometer for AI coding-agent token usage and subscription limits |
 | [`phbv`](Casks/phbv.rb) | Terminal UI for beads (bd) issue tracking |
@@ -15,6 +16,7 @@ brew tap phall1/tap
 | [`phux`](Formula/phux.rb) | Libghostty-backed terminal control plane (not tmux) |
 
 ```sh
+brew install phall1/tap/blackbird
 brew install --cask phall1/tap/phux-cockpit
 brew install --cask phall1/tap/token-tach
 brew install --cask phall1/tap/phbv

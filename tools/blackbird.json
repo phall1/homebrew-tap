@@ -1,0 +1,11 @@
+{
+	"tool": "blackbird",
+	"repo": "phall1/blackbird",
+	"path": "Formula/blackbird.rb",
+	"message": "Brew formula update for blackbird",
+	"assets": {
+		"DARWIN_ARM64": { "name": "blackbird-{tag}-aarch64-apple-darwin.tar.gz", "sidecar": true },
+		"LINUX_X64": { "name": "blackbird-{tag}-x86_64-unknown-linux-gnu.tar.gz", "sidecar": true },
+		"LINUX_ARM64": { "name": "blackbird-{tag}-aarch64-unknown-linux-gnu.tar.gz", "sidecar": true }
+	}
+}
