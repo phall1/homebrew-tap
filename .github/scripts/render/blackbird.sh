@@ -36,11 +36,12 @@ class Blackbird < Formula
   end
 
   def install
-    bin.install "blackbird"
+    bin.install "blackbird", "blackbird-claude"
   end
 
   test do
     assert_match version.to_s, shell_output("#{bin}/blackbird --version")
+    assert_match version.to_s, shell_output("#{bin}/blackbird-claude --version")
   end
 end
 RUBY
