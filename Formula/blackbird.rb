@@ -10,8 +10,8 @@ class Blackbird < Formula
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/phall1/blackbird/releases/download/v0.1.3/blackbird-v0.1.3-aarch64-apple-darwin.tar.gz"
-      sha256 "20b2ad2c609ae48257591df905d13a3b8a24e9111481ac81131d6897c1a20b29"
+      url "https://github.com/phall1/blackbird/releases/download/v0.1.5/blackbird-v0.1.5-aarch64-apple-darwin.tar.gz"
+      sha256 "d5fbcb8780a42fc5cc620240e462114efadd65dc92a61a2b752f64952163e15b"
     else
       odie "Blackbird currently requires Apple Silicon on macOS"
     end
@@ -19,19 +19,20 @@ class Blackbird < Formula
 
   on_linux do
     if Hardware::CPU.arm?
-      url "https://github.com/phall1/blackbird/releases/download/v0.1.3/blackbird-v0.1.3-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "6ed753b3c4fc5a9c5c77e602ba3d5691aed893848564e0b8e06c581a1f520b58"
+      url "https://github.com/phall1/blackbird/releases/download/v0.1.5/blackbird-v0.1.5-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "1f56916871618b997ba1dd416a95f9e8bc8d59eff6fcabf21f5f06941107162b"
     else
-      url "https://github.com/phall1/blackbird/releases/download/v0.1.3/blackbird-v0.1.3-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "0e7db55d6f52149fb420c42b571222ed09ec6e78a1b39fd674a868ddcb55a62d"
+      url "https://github.com/phall1/blackbird/releases/download/v0.1.5/blackbird-v0.1.5-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "29a11da34c750c22ceeba1195f29814681c28426f709436c9537bde98390c655"
     end
   end
 
   def install
-    bin.install "blackbird"
+    bin.install "blackbird", "blackbird-claude"
   end
 
   test do
     assert_match version.to_s, shell_output("#{bin}/blackbird --version")
+    assert_match version.to_s, shell_output("#{bin}/blackbird-claude --version")
   end
 end
