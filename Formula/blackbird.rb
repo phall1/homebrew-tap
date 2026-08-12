@@ -10,8 +10,8 @@ class Blackbird < Formula
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/phall1/blackbird/releases/download/v0.1.5/blackbird-v0.1.5-aarch64-apple-darwin.tar.gz"
-      sha256 "d5fbcb8780a42fc5cc620240e462114efadd65dc92a61a2b752f64952163e15b"
+      url "https://github.com/phall1/blackbird/releases/download/v0.1.6/blackbird-v0.1.6-aarch64-apple-darwin.tar.gz"
+      sha256 "d64675509f98fd57519cc0a26a322823cd7465deaf0b2c385181dea1a56b4ca9"
     else
       odie "Blackbird currently requires Apple Silicon on macOS"
     end
@@ -19,11 +19,11 @@ class Blackbird < Formula
 
   on_linux do
     if Hardware::CPU.arm?
-      url "https://github.com/phall1/blackbird/releases/download/v0.1.5/blackbird-v0.1.5-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "1f56916871618b997ba1dd416a95f9e8bc8d59eff6fcabf21f5f06941107162b"
+      url "https://github.com/phall1/blackbird/releases/download/v0.1.6/blackbird-v0.1.6-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "56d9a52a87a71938b16d7d56392fd93025620ac319167abf51cf0a2ec072d532"
     else
-      url "https://github.com/phall1/blackbird/releases/download/v0.1.5/blackbird-v0.1.5-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "29a11da34c750c22ceeba1195f29814681c28426f709436c9537bde98390c655"
+      url "https://github.com/phall1/blackbird/releases/download/v0.1.6/blackbird-v0.1.6-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "e85f5d7f108672ec21870a9e9f471bc669852216f59e505dbc1321ddefce3311"
     end
   end
 
