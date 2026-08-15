@@ -73,7 +73,18 @@ if [[ -n "$requested_tag" ]]; then
 	}
 	gh api "repos/$repo/releases/tags/$requested_tag" > "$release"
 else
-	gh api "repos/$repo/releases/latest" > "$release"
+	# `releases/latest` is "most recently published release", full stop — a repo
+	# that also cuts side-channel releases (a plugin, an extension) under a
+	# different tag scheme can have one of those shadow the actual latest tool
+	# version. Walk the release list instead and take the newest non-draft,
+	# non-prerelease entry whose tag is actually vMAJOR.MINOR.PATCH.
+	latest_tag="$(gh api "repos/$repo/releases" --paginate \
+		--jq '[.[] | select(.draft == false and .prerelease == false and (.tag_name | test("^v[0-9]+\\.[0-9]+\\.[0-9]+$")))][0].tag_name // empty')"
+	[[ -n "$latest_tag" ]] || {
+		echo "error: $tool: no release tag matching vMAJOR.MINOR.PATCH found" >&2
+		exit 1
+	}
+	gh api "repos/$repo/releases/tags/$latest_tag" > "$release"
 fi
 
 tag="$(jq -er '.tag_name' "$release")"
