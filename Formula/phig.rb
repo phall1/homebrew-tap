@@ -1,25 +1,25 @@
 class Phig < Formula
   desc "A fast, focused terminal Git history and diff browser"
   homepage "https://github.com/phall1/phig"
-  version "1.0.0"
+  version "1.1.0"
   if OS.mac?
     if Hardware::CPU.arm?
-      url "https://github.com/phall1/phig/releases/download/v1.0.0/phig-cli-aarch64-apple-darwin.tar.xz"
-      sha256 "575f26e8651cbc4c890df84567032108cbe6e11bdc29f3084a269d841519a63c"
+      url "https://github.com/phall1/phig/releases/download/v1.1.0/phig-cli-aarch64-apple-darwin.tar.xz"
+      sha256 "dee0c450cd64ede5630c93dfc262e3e04001f359e4e9fdedf2545f9895d96737"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/phall1/phig/releases/download/v1.0.0/phig-cli-x86_64-apple-darwin.tar.xz"
-      sha256 "9f9a1f1f03e88b8e51efb7cfdccd4718bed18ae9a4c5c946e064c877b5d354bb"
+      url "https://github.com/phall1/phig/releases/download/v1.1.0/phig-cli-x86_64-apple-darwin.tar.xz"
+      sha256 "a08fcff964d7a0ade8759ba483a97908c4d0272271332a6746c1a3888bf331c9"
     end
   end
   if OS.linux?
     if Hardware::CPU.arm?
-      url "https://github.com/phall1/phig/releases/download/v1.0.0/phig-cli-aarch64-unknown-linux-gnu.tar.xz"
-      sha256 "8987d36372d7d7f4e2f3d1f97f9a4592a01c71fa8869a22cbd54adb70fd49bc5"
+      url "https://github.com/phall1/phig/releases/download/v1.1.0/phig-cli-aarch64-unknown-linux-gnu.tar.xz"
+      sha256 "d2bdef14d145e31853177ebc915cff273bd62036b07d724f4d66a3fc2229721e"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/phall1/phig/releases/download/v1.0.0/phig-cli-x86_64-unknown-linux-gnu.tar.xz"
-      sha256 "46118467b640136985bda1d6b54900e8c2e1517fe89350fe8632cc6f5434c16b"
+      url "https://github.com/phall1/phig/releases/download/v1.1.0/phig-cli-x86_64-unknown-linux-gnu.tar.xz"
+      sha256 "7151468ac482cb53dbb6111d2ee2bee17834d83c8d3cbec7f77380e4decf04a8"
     end
   end
   license any_of: ["MIT", "Apache-2.0"]
