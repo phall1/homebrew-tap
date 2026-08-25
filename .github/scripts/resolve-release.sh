@@ -112,6 +112,13 @@ asset_url() {
 	url="$(jq -er --arg name "$name" '.assets[] | select(.name == $name) | .browser_download_url' "$release")"
 	[[ "$url" == "https://github.com/$repo/releases/download/$tag/$name" ]] || {
 		echo "error: $tool: $name resolves to an unexpected URL: $url" >&2
+		echo "       expected: https://github.com/$repo/releases/download/$tag/$name" >&2
+		# By far the likeliest cause, and the one that reads as a security
+		# alarm when it is really a rename: GitHub redirects the old owner
+		# after a transfer, so downloads keep working and this pin is the
+		# only thing that notices. Say so, or the next transfer costs an
+		# afternoon of chasing a checksum mismatch that does not exist.
+		echo "       if the upstream repository moved, set \"repo\" in tools/$tool.json to the new owner" >&2
 		return 1
 	}
 	printf '%s\n' "$url"

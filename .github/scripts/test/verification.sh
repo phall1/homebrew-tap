@@ -64,7 +64,7 @@ expect_fail "a missing checksum manifest is fatal" tools/zzz-neg.json "error"
 # A sidecar demand the release cannot satisfy must fail too.
 cat > tools/zzz-neg.json <<'JSON'
 {
-	"tool": "zzz-neg", "repo": "phall1/phux-cockpit", "path": "Formula/zzz-neg.rb", "message": "x",
+	"tool": "zzz-neg", "repo": "no-phux/phux-cockpit", "path": "Formula/zzz-neg.rb", "message": "x",
 	"assets": { "ARCHIVE": { "name": "SHA256SUMS", "sidecar": true } }
 }
 JSON
