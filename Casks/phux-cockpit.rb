@@ -3,11 +3,11 @@ cask "phux-cockpit" do
   version "0.12.0"
   sha256 "27c841e9f2e5a6febfac9d52ae34932d6e62da0f01b06c53f2378c78ac7d39e3"
 
-  url "https://github.com/phall1/phux-cockpit/releases/download/v#{version}/phux-cockpit-#{version}-macos-arm64.zip",
-      verified: "github.com/phall1/phux-cockpit/"
+  url "https://github.com/no-phux/phux-cockpit/releases/download/v#{version}/phux-cockpit-#{version}-macos-arm64.zip",
+      verified: "github.com/no-phux/phux-cockpit/"
   name "Phux Cockpit"
   desc "Native spatial runtime for terminal and web surfaces"
-  homepage "https://github.com/phall1/phux-cockpit"
+  homepage "https://github.com/no-phux/phux-cockpit"
 
   livecheck do
     url :url
