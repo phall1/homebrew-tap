@@ -1,7 +1,6 @@
 class Phig < Formula
-  desc "A fast, focused terminal Git history and diff browser"
+  desc "Fast, focused terminal Git history and diff browser"
   homepage "https://github.com/phall1/phig"
-  version "1.1.1"
   if OS.mac?
     if Hardware::CPU.arm?
       url "https://github.com/phall1/phig/releases/download/v1.1.1/phig-cli-aarch64-apple-darwin.tar.xz"
