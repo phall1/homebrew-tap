@@ -9,6 +9,7 @@ brew tap phall1/tap
 | Package | What |
 |---|---|
 | [`blackbird`](Formula/blackbird.rb) | Durable local-first coordination for human and AI agent work |
+| [`friday`](Casks/friday.rb) | Private, on-device macOS dictation for Apple Silicon |
 | [`phux`](Formula/phux.rb) | Libghostty-backed terminal control plane (not tmux) |
 | [`phux-cockpit`](Casks/phux-cockpit.rb) | Native companion for the phux terminal control plane |
 | [`phui`](Formula/phui.rb) | Terminal UI for GitHub pull requests, issues, diffs, and Actions |
@@ -17,6 +18,7 @@ brew tap phall1/tap
 
 ```sh
 brew install phall1/tap/blackbird
+brew install --cask phall1/tap/friday
 brew install phall1/tap/phux
 brew install --cask phall1/tap/phux-cockpit
 brew install phall1/tap/phui

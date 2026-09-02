@@ -1,0 +1,10 @@
+{
+	"tool": "friday",
+	"repo": "phall1/friday",
+	"path": "Casks/friday.rb",
+	"message": "Brew cask update for Friday",
+	"sums": "SHA256SUMS",
+	"assets": {
+		"DMG": { "name": "Friday-{version}-arm64.dmg" }
+	}
+}
