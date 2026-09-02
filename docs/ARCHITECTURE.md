@@ -15,7 +15,7 @@ maintains all of them:
 1. A source repository publishes a release and dispatches this repository
    (event type `tap-release` with `client_payload.tool`, or the older
    per-tool `<tool>-release`, both of which route to the same place).
-   `schedule` also runs hourly, so a release still lands within the hour if a
+   `schedule` also runs every fifteen minutes, so a release still lands promptly if a
    dispatch never arrives.
 2. [`resolve-release.sh`](../.github/scripts/resolve-release.sh) resolves that
    tool's latest release and verifies every artifact.
@@ -73,7 +73,7 @@ Two files, no YAML:
    anything more involved — `phux-cockpit` reads the release body to decide
    whether the build was notarized.
 
-That is all. The hourly matrix, the dispatch routing, and CI pick the package
+That is all. The scheduled matrix, the dispatch routing, and CI pick the package
 up from the manifest.
 
 ## Checking your work
