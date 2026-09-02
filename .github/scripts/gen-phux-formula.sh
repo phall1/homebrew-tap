@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Keep this renderer in sync with phall1/phux/scripts/gen-formula.sh.
+# Keep this renderer in sync with no-phux/phux/scripts/gen-formula.sh.
 set -euo pipefail
 
 tag="${1:?usage: gen-phux-formula.sh <tag> <dist-dir> [out-file]}"
 dist="${2:?usage: gen-phux-formula.sh <tag> <dist-dir> [out-file]}"
-base="https://github.com/phall1/phux/releases/download/${tag}"
+base="https://github.com/no-phux/phux/releases/download/${tag}"
 
 sha() {
   local f="${dist}/phux-${tag}-$1.tar.gz.sha256" digest
@@ -51,7 +51,7 @@ emit() {
 # Do not edit by hand.
 class Phux < Formula
   desc "Libghostty-backed terminal control plane (not tmux)"
-  homepage "https://github.com/phall1/phux"
+  homepage "https://github.com/no-phux/phux"
   url "${base}/phux-${tag}-${primary_target}.tar.gz"
   sha256 "${primary_sha}"
   license any_of: ["MIT", "Apache-2.0"]

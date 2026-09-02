@@ -32,8 +32,7 @@ cask "phux-cockpit" do
   version "${version}"
   sha256 "${sha256}"
 
-  url "https://github.com/no-phux/phux-cockpit/releases/download/v#{version}/phux-cockpit-#{version}-macos-arm64.zip",
-      verified: "github.com/no-phux/phux-cockpit/"
+  url "https://github.com/no-phux/phux-cockpit/releases/download/v#{version}/phux-cockpit-#{version}-macos-arm64.zip"
   name "Phux Cockpit"
   desc "${description}"
   homepage "https://github.com/no-phux/phux-cockpit"

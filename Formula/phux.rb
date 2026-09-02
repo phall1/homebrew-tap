@@ -2,8 +2,8 @@
 # Do not edit by hand.
 class Phux < Formula
   desc "Libghostty-backed terminal control plane (not tmux)"
-  homepage "https://github.com/phall1/phux"
-  url "https://github.com/phall1/phux/releases/download/v0.23.3/phux-v0.23.3-aarch64-apple-darwin.tar.gz"
+  homepage "https://github.com/no-phux/phux"
+  url "https://github.com/no-phux/phux/releases/download/v0.23.3/phux-v0.23.3-aarch64-apple-darwin.tar.gz"
   sha256 "dbe78a1270d399c1bcfe72aa6c371e89a90780ec58d67e77d590815c41704207"
   license any_of: ["MIT", "Apache-2.0"]
 
@@ -18,11 +18,11 @@ class Phux < Formula
 
   on_linux do
     on_intel do
-      url "https://github.com/phall1/phux/releases/download/v0.23.3/phux-v0.23.3-x86_64-unknown-linux-gnu.tar.gz"
+      url "https://github.com/no-phux/phux/releases/download/v0.23.3/phux-v0.23.3-x86_64-unknown-linux-gnu.tar.gz"
       sha256 "851a619eae0e537e328628f553d83141b27757e43948d5b5fa3feb15d42494c9"
     end
     on_arm do
-      url "https://github.com/phall1/phux/releases/download/v0.23.3/phux-v0.23.3-aarch64-unknown-linux-gnu.tar.gz"
+      url "https://github.com/no-phux/phux/releases/download/v0.23.3/phux-v0.23.3-aarch64-unknown-linux-gnu.tar.gz"
       sha256 "c94cd90731787befa7057cbb5ca022087bdffdd9732cceaf071d1f83efe4500c"
     end
   end

@@ -1,6 +1,6 @@
 {
 	"tool": "phux",
-	"repo": "phall1/phux",
+	"repo": "no-phux/phux",
 	"path": "Formula/phux.rb",
 	"message": "Brew formula update for phux",
 	"comment": "Assets are optional: phux ships partial releases, and the renderer emits whatever platforms are actually present. Each artifact is cross-checked against the .sha256 sidecar the release publishes alongside it.",

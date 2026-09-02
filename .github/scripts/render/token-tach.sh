@@ -11,8 +11,7 @@ cask "token-tach" do
   version "${VERSION}"
   sha256 "${DMG_SHA256}"
 
-  url "https://github.com/phall1/token-tach/releases/download/v#{version}/token-tach-#{version}-universal2.dmg",
-      verified: "github.com/phall1/token-tach/"
+  url "https://github.com/phall1/token-tach/releases/download/v#{version}/token-tach-#{version}-universal2.dmg"
   name "Token Tach"
   desc "Menu-bar tachometer for AI coding-agent token usage and subscription limits"
   homepage "https://github.com/phall1/token-tach"
