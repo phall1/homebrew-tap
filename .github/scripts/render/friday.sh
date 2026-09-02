@@ -13,7 +13,7 @@ cask "friday" do
 
   url "https://github.com/phall1/friday/releases/download/v#{version}/Friday-#{version}-arm64.dmg"
   name "Friday"
-  desc "Private, on-device macOS dictation for Apple Silicon"
+  desc "Private, on-device dictation for Apple Silicon"
   homepage "https://github.com/phall1/friday"
 
   livecheck do
