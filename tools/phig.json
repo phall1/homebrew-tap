@@ -1,0 +1,13 @@
+{
+	"tool": "phig",
+	"repo": "phall1/phig",
+	"path": "Formula/phig.rb",
+	"message": "Brew formula update for phig",
+	"comment": "phig builds with cargo-dist, which publishes a phig.rb of its own on every release. The tap renders its own formula instead — cargo-dist's emits a leading article in desc, a redundant version stanza, and an unfrozen constant, none of which survive brew style, and hand-fixing it here only lasted until the next release. The push side is disabled in phall1/phig; this manifest is the single source. Each artifact is cross-checked against the .sha256 sidecar the release publishes alongside it.",
+	"assets": {
+		"DARWIN_ARM64": { "name": "phig-cli-aarch64-apple-darwin.tar.xz", "sidecar": true },
+		"DARWIN_X64": { "name": "phig-cli-x86_64-apple-darwin.tar.xz", "sidecar": true },
+		"LINUX_ARM64": { "name": "phig-cli-aarch64-unknown-linux-gnu.tar.xz", "sidecar": true },
+		"LINUX_X64": { "name": "phig-cli-x86_64-unknown-linux-gnu.tar.xz", "sidecar": true }
+	}
+}
