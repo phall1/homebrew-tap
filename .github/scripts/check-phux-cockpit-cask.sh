@@ -54,6 +54,7 @@ bash "$root/.github/scripts/gen-phux-cockpit-cask.sh" \
   0000000000000000000000000000000000000000000000000000000000000000 \
   false \
   "$canonical" >/dev/null
+ruby -c "$canonical" >/dev/null
 grep -Fq 'url "https://github.com/no-phux/phux/releases/download/cockpit-v#{version}/' "$canonical"
 grep -Fq 'homepage "https://github.com/no-phux/phux/tree/main/clients/cockpit"' "$canonical"
 grep -Fq 'regex(/^cockpit-v(' "$canonical"
