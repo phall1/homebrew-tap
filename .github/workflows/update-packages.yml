@@ -48,7 +48,7 @@ concurrency:
 
 jobs:
   discover:
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.select.outputs.matrix }}
     steps:
@@ -68,7 +68,7 @@ jobs:
 
   update:
     needs: discover
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       # Serial on purpose. Every job pushes to main, and racing pushes just

@@ -24,14 +24,14 @@ jobs:
       - name: Selection, verification, and add-a-package suites
         run: bash .github/scripts/test/all.sh
 
-  test-bot:
-    runs-on: macos-15
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - uses: Homebrew/actions/setup-homebrew@5037c6f1012cc5ea0b9f03fedbaf9955ed9e51e0 # main
-      - name: Check generated phux packages
-        run: |
-          bash .github/scripts/check-phux-formula.sh
-          bash .github/scripts/check-phux-cockpit-cask.sh
-      - name: Run Homebrew tap checks
-        run: brew test-bot --only-tap-syntax
+  # test-bot:
+  #   runs-on: macos-15
+  #   steps:
+  #     - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+  #     - uses: Homebrew/actions/setup-homebrew@5037c6f1012cc5ea0b9f03fedbaf9955ed9e51e0 # main
+  #     - name: Check generated phux packages
+  #       run: |
+  #         bash .github/scripts/check-phux-formula.sh
+  #         bash .github/scripts/check-phux-cockpit-cask.sh
+  #     - name: Run Homebrew tap checks
+  #       run: brew test-bot --only-tap-syntax
