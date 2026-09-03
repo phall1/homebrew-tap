@@ -48,4 +48,15 @@ for notarized_mode in false true; do
   fi
 done
 
+canonical="$tmp/phux-cockpit-canonical.rb"
+bash "$root/.github/scripts/gen-phux-cockpit-cask.sh" \
+  cockpit-v0.16.2 \
+  0000000000000000000000000000000000000000000000000000000000000000 \
+  false \
+  "$canonical" >/dev/null
+ruby -c "$canonical" >/dev/null
+grep -Fq 'url "https://github.com/no-phux/phux/releases/download/cockpit-v#{version}/' "$canonical"
+grep -Fq 'homepage "https://github.com/no-phux/phux/tree/main/clients/cockpit"' "$canonical"
+grep -Fq 'regex(/^cockpit-v(' "$canonical"
+
 echo "Phux Cockpit cask regeneration check passed"

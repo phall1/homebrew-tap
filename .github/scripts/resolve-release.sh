@@ -57,8 +57,50 @@ sha256_of() {
 json() { jq -er "$1" "$manifest"; }
 
 tool="$(json '.tool')"
-repo="$(json '.repo')"
+primary_repo="$(json '.repo')"
+primary_prefix="$(jq -r '."tag-prefix" // "v"' "$manifest")"
+legacy_repo="$(jq -r '.legacy.repo // ""' "$manifest")"
+legacy_prefix="$(jq -r '.legacy."tag-prefix" // ""' "$manifest")"
 sums_asset="$(jq -r '.sums // ""' "$manifest")"
+
+valid_prefix() {
+	[[ "$1" =~ ^[A-Za-z0-9._-]*v$ ]]
+}
+
+version_from_tag() {
+	local candidate="$1" prefix="$2" version
+	[[ "$candidate" == "$prefix"* ]] || return 1
+	version="${candidate#"$prefix"}"
+	[[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || return 1
+	printf '%s\n' "$version"
+}
+
+latest_tag_for() {
+	local candidate_repo="$1" prefix="$2"
+	gh api "repos/$candidate_repo/releases?per_page=100" --paginate --slurp |
+		jq -r --arg prefix "$prefix" \
+		'map(.[]) | [.[] | select(
+			.draft == false and
+			.prerelease == false and
+			(.tag_name | startswith($prefix)) and
+			(.tag_name | ltrimstr($prefix) | test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))
+		)][0].tag_name // empty'
+}
+
+valid_prefix "$primary_prefix" || {
+	echo "error: $tool: tag-prefix '$primary_prefix' is unsafe" >&2
+	exit 1
+}
+if [[ -n "$legacy_repo" || -n "$legacy_prefix" ]]; then
+	[[ -n "$legacy_repo" && -n "$legacy_prefix" ]] || {
+		echo "error: $tool: legacy repo and tag-prefix must be configured together" >&2
+		exit 1
+	}
+	valid_prefix "$legacy_prefix" || {
+		echo "error: $tool: legacy tag-prefix '$legacy_prefix' is unsafe" >&2
+		exit 1
+	}
+fi
 
 dist="$work/dist"
 release="$work/release.json"
@@ -67,10 +109,16 @@ mkdir -p "$dist"
 : > "$envfile"
 
 if [[ -n "$requested_tag" ]]; then
-	[[ "$requested_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
-		echo "error: $tool: requested release tag '$requested_tag' is not vMAJOR.MINOR.PATCH" >&2
+	if version_from_tag "$requested_tag" "$primary_prefix" >/dev/null; then
+		repo="$primary_repo"
+		tag_prefix="$primary_prefix"
+	elif [[ -n "$legacy_repo" ]] && version_from_tag "$requested_tag" "$legacy_prefix" >/dev/null; then
+		repo="$legacy_repo"
+		tag_prefix="$legacy_prefix"
+	else
+		echo "error: $tool: requested release tag '$requested_tag' does not match an allowed tag prefix" >&2
 		exit 1
-	}
+	fi
 	gh api "repos/$repo/releases/tags/$requested_tag" > "$release"
 else
 	# `releases/latest` is "most recently published release", full stop — a repo
@@ -78,25 +126,30 @@ else
 	# different tag scheme can have one of those shadow the actual latest tool
 	# version. Walk the release list instead and take the newest non-draft,
 	# non-prerelease entry whose tag is actually vMAJOR.MINOR.PATCH.
-	latest_tag="$(gh api "repos/$repo/releases" --paginate \
-		--jq '[.[] | select(.draft == false and .prerelease == false and (.tag_name | test("^v[0-9]+\\.[0-9]+\\.[0-9]+$")))][0].tag_name // empty')"
+	repo="$primary_repo"
+	tag_prefix="$primary_prefix"
+	latest_tag="$(latest_tag_for "$repo" "$tag_prefix")"
+	if [[ -z "$latest_tag" && -n "$legacy_repo" ]]; then
+		repo="$legacy_repo"
+		tag_prefix="$legacy_prefix"
+		latest_tag="$(latest_tag_for "$repo" "$tag_prefix")"
+	fi
 	[[ -n "$latest_tag" ]] || {
-		echo "error: $tool: no release tag matching vMAJOR.MINOR.PATCH found" >&2
+		echo "error: $tool: no release tag matching an allowed prefix found" >&2
 		exit 1
 	}
 	gh api "repos/$repo/releases/tags/$latest_tag" > "$release"
 fi
 
 tag="$(jq -er '.tag_name' "$release")"
-[[ "$tag" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]] || {
-	echo "error: $tool: release tag '$tag' is not vMAJOR.MINOR.PATCH" >&2
+version="$(version_from_tag "$tag" "$tag_prefix")" || {
+	echo "error: $tool: release tag '$tag' does not match '$tag_prefix'MAJOR.MINOR.PATCH" >&2
 	exit 1
 }
 [[ -z "$requested_tag" || "$tag" == "$requested_tag" ]] || {
 	echo "error: $tool: requested release $requested_tag resolved to $tag" >&2
 	exit 1
 }
-version="${BASH_REMATCH[1]}"
 
 # Resolve an asset to its canonical, pinned download URL — or fail.
 asset_url() {
