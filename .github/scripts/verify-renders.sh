@@ -31,12 +31,15 @@ failed=()
 for tool in "${tools[@]}"; do
 	path="$(jq -er '.path' "tools/$tool.json")"
 	rendered="$work/$tool.rb"
-	tag="$(grep -Eom1 'releases/download/v[0-9]+\.[0-9]+\.[0-9]+/' "$path" | cut -d/ -f3 || true)"
-	if [[ -z "$tag" ]]; then
-		version="$(grep -Eom1 '^[[:space:]]*version "[0-9]+\.[0-9]+\.[0-9]+"' "$path" | cut -d'"' -f2 || true)"
-		[[ -n "$version" ]] && tag="v$version"
+	version="$(grep -Eom1 '^[[:space:]]*version "[0-9]+\.[0-9]+\.[0-9]+"' "$path" | cut -d'"' -f2 || true)"
+	tag="$(grep -Eom1 'releases/download/[^/]+/' "$path" | cut -d/ -f3 || true)"
+	if [[ -n "$tag" && -n "$version" ]]; then
+		tag="${tag/\#\{version\}/$version}"
+	elif [[ -z "$tag" ]]; then
+		prefix="$(jq -r '."tag-prefix" // "v"' "tools/$tool.json")"
+		[[ -n "$version" ]] && tag="${prefix}${version}"
 	fi
-	if [[ ! "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+	if [[ -z "$tag" ]]; then
 		echo "FAIL $tool — could not determine the pinned release tag from $path" >&2
 		failed+=("$tool")
 		continue

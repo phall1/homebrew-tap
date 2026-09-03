@@ -6,10 +6,26 @@ sha256="${2:?usage: gen-phux-cockpit-cask.sh <tag> <sha256> <notarized> [out-fil
 notarized="${3:?usage: gen-phux-cockpit-cask.sh <tag> <sha256> <notarized> [out-file]}"
 out="${4:-}"
 
-[[ "$tag" =~ ^v(([0-9]+)\.([0-9]+)\.([0-9]+))$ ]]
-version="${BASH_REMATCH[1]}"
-major="${BASH_REMATCH[2]}"
-minor="${BASH_REMATCH[3]}"
+if [[ "$tag" =~ ^v(([0-9]+)\.([0-9]+)\.([0-9]+))$ ]]; then
+  version="${BASH_REMATCH[1]}"
+  major="${BASH_REMATCH[2]}"
+  minor="${BASH_REMATCH[3]}"
+  repo="no-phux/phux-cockpit"
+  release_tag='v#{version}'
+  homepage="https://github.com/no-phux/phux-cockpit"
+  livecheck_regex=""
+elif [[ "$tag" =~ ^cockpit-v(([0-9]+)\.([0-9]+)\.([0-9]+))$ ]]; then
+  version="${BASH_REMATCH[1]}"
+  major="${BASH_REMATCH[2]}"
+  minor="${BASH_REMATCH[3]}"
+  repo="no-phux/phux"
+  release_tag='cockpit-v#{version}'
+  homepage="https://github.com/no-phux/phux/tree/main/clients/cockpit"
+  livecheck_regex='    regex(/^cockpit-v(\d+(?:\.\d+)+)$/i)'
+else
+  echo "error: tag must be vMAJOR.MINOR.PATCH or cockpit-vMAJOR.MINOR.PATCH" >&2
+  exit 1
+fi
 spatial_runtime=false
 description="Native companion for the phux terminal control plane"
 if (( major > 0 || minor >= 3 )); then
@@ -32,13 +48,20 @@ cask "phux-cockpit" do
   version "${version}"
   sha256 "${sha256}"
 
-  url "https://github.com/no-phux/phux-cockpit/releases/download/v#{version}/phux-cockpit-#{version}-macos-arm64.zip"
+  url "https://github.com/${repo}/releases/download/${release_tag}/phux-cockpit-#{version}-macos-arm64.zip"
   name "Phux Cockpit"
   desc "${description}"
-  homepage "https://github.com/no-phux/phux-cockpit"
+  homepage "${homepage}"
 
   livecheck do
     url :url
+EOF
+
+  if [[ -n "$livecheck_regex" ]]; then
+    printf '%s\n' "$livecheck_regex"
+  fi
+
+  cat <<'EOF'
     strategy :github_latest
   end
 
