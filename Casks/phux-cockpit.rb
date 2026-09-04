@@ -1,15 +1,16 @@
 # Generated from tools/phux-cockpit.json. Do not edit by hand.
 cask "phux-cockpit" do
-  version "0.16.1"
-  sha256 "2312cb510fbab8319d82b4842868ca4db1b9e1c83773c76bdbf6b2d08e883ee6"
+  version "0.16.2"
+  sha256 "34010323e82007f9a353093e935fff989dcd970771c162f0598ac2b909f5388b"
 
-  url "https://github.com/no-phux/phux-cockpit/releases/download/v#{version}/phux-cockpit-#{version}-macos-arm64.zip"
+  url "https://github.com/no-phux/phux/releases/download/cockpit-v#{version}/phux-cockpit-#{version}-macos-arm64.zip"
   name "Phux Cockpit"
   desc "Native spatial runtime for terminal and web surfaces"
-  homepage "https://github.com/no-phux/phux-cockpit"
+  homepage "https://github.com/no-phux/phux/tree/main/clients/cockpit"
 
   livecheck do
     url :url
+    regex(/^cockpit-v(\d+(?:\.\d+)+)$/i)
     strategy :github_latest
   end
 
