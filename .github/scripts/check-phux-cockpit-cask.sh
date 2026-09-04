@@ -14,8 +14,12 @@ notarized=true
 if grep -Fq '  postflight do' "$cask"; then
   notarized=false
 fi
+tag="v$version"
+if grep -Fq 'github.com/no-phux/phux/releases/download/cockpit-v#{version}/' "$cask"; then
+  tag="cockpit-v$version"
+fi
 
-bash "$root/.github/scripts/gen-phux-cockpit-cask.sh" "v$version" "$sha256" "$notarized" "$tmp/phux-cockpit.rb" >/dev/null
+bash "$root/.github/scripts/gen-phux-cockpit-cask.sh" "$tag" "$sha256" "$notarized" "$tmp/phux-cockpit.rb" >/dev/null
 if ! cmp -s "$cask" "$tmp/phux-cockpit.rb"; then
   echo "Casks/phux-cockpit.rb does not match its generator" >&2
   diff -u "$cask" "$tmp/phux-cockpit.rb" >&2 || true

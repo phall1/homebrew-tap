@@ -81,14 +81,14 @@ JSON
 expect_pass "a real release with matching sidecars passes" tools/zzz-neg.json
 expect_pass "a pinned release with matching sidecars passes" tools/zzz-neg.json v0.14.1
 
-# A repository migration can declare a future component-tag source without
-# breaking the current cask before that source publishes its first release.
+# A repository migration keeps explicitly pinned standalone releases resolvable
+# while preferring the canonical component-tag source after cutover.
 expect_pass "Cockpit falls back to its standalone release before cutover" tools/phux-cockpit.json v0.16.1
 fallback_tag="$(bash .github/scripts/resolve-release.sh tools/phux-cockpit.json "$work/cockpit-fallback" | awk -F= '$1 == "TAG" { print $2; exit }')"
-if [[ "$fallback_tag" == v0.16.1 ]]; then
-	echo "ok   Cockpit latest-release fallback selects the standalone baseline"
+if [[ "$fallback_tag" == cockpit-v* ]]; then
+	echo "ok   Cockpit latest release selects the canonical component tag"
 else
-	echo "FAIL Cockpit latest-release fallback selected ${fallback_tag:-nothing}, expected v0.16.1"; FAILED=1
+	echo "FAIL Cockpit latest release selected ${fallback_tag:-nothing}, expected a canonical cockpit-v* tag"; FAILED=1
 fi
 
 exit "$FAILED"
