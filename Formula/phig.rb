@@ -11,21 +11,21 @@ class Phig < Formula
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/phall1/phig/releases/download/v1.1.1/phig-cli-aarch64-apple-darwin.tar.xz"
-      sha256 "4001b319208fd1e6f02a7a886759bc02bc668bee9b80a47eaca28b373882356d"
+      url "https://github.com/phall1/phig/releases/download/v1.2.0/phig-cli-aarch64-apple-darwin.tar.xz"
+      sha256 "899ce7eceefd56316138fb578d1389493b0ff168fec61b848aeff856f76b898c"
     else
-      url "https://github.com/phall1/phig/releases/download/v1.1.1/phig-cli-x86_64-apple-darwin.tar.xz"
-      sha256 "6db2e196f4a9ed0ec62805610fd3676daf0096202a14a9e6255f07e79531f8f4"
+      url "https://github.com/phall1/phig/releases/download/v1.2.0/phig-cli-x86_64-apple-darwin.tar.xz"
+      sha256 "96cc211399308c3c614f10003f919f69887a9245a5d292babdae25e082a503d8"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
-      url "https://github.com/phall1/phig/releases/download/v1.1.1/phig-cli-aarch64-unknown-linux-gnu.tar.xz"
-      sha256 "a25c9266ba07ab981a5f0ce669686eed60326e314cc5e58de1f5d2b6f5758347"
+      url "https://github.com/phall1/phig/releases/download/v1.2.0/phig-cli-aarch64-unknown-linux-gnu.tar.xz"
+      sha256 "9bbcae938309d5c3459ba65091dbd2aecc43b0a7ab4ba9cc1f59716d3599e221"
     else
-      url "https://github.com/phall1/phig/releases/download/v1.1.1/phig-cli-x86_64-unknown-linux-gnu.tar.xz"
-      sha256 "c2cf4f2a7d96f922cc75052817165a48d4db60ea8d73440c63ea424dd9446af7"
+      url "https://github.com/phall1/phig/releases/download/v1.2.0/phig-cli-x86_64-unknown-linux-gnu.tar.xz"
+      sha256 "7607635d6d89263e7935ac4c54a7a09163027717760756d9721493a77850d89c"
     end
   end
 
