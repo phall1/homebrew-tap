@@ -64,8 +64,8 @@ expect_fail "a missing checksum manifest is fatal" tools/zzz-neg.json "error"
 # A sidecar demand the release cannot satisfy must fail too.
 cat > tools/zzz-neg.json <<'JSON'
 {
-	"tool": "zzz-neg", "repo": "no-phux/phux-cockpit", "path": "Formula/zzz-neg.rb", "message": "x",
-	"assets": { "ARCHIVE": { "name": "SHA256SUMS", "sidecar": true } }
+	"tool": "zzz-neg", "repo": "phall1/phbv", "path": "Formula/zzz-neg.rb", "message": "x",
+	"assets": { "ARCHIVE": { "name": "phbv_darwin_arm64.tar.gz", "sidecar": true } }
 }
 JSON
 expect_fail "an unverifiable sidecar is fatal" tools/zzz-neg.json "no verifiable"
@@ -80,15 +80,5 @@ cat > tools/zzz-neg.json <<'JSON'
 JSON
 expect_pass "a real release with matching sidecars passes" tools/zzz-neg.json
 expect_pass "a pinned release with matching sidecars passes" tools/zzz-neg.json v0.14.1
-
-# A repository migration keeps explicitly pinned standalone releases resolvable
-# while preferring the canonical component-tag source after cutover.
-expect_pass "Cockpit falls back to its standalone release before cutover" tools/phux-cockpit.json v0.16.1
-fallback_tag="$(bash .github/scripts/resolve-release.sh tools/phux-cockpit.json "$work/cockpit-fallback" | awk -F= '$1 == "TAG" { print $2; exit }')"
-if [[ "$fallback_tag" == cockpit-v* ]]; then
-	echo "ok   Cockpit latest release selects the canonical component tag"
-else
-	echo "FAIL Cockpit latest release selected ${fallback_tag:-nothing}, expected a canonical cockpit-v* tag"; FAILED=1
-fi
 
 exit "$FAILED"

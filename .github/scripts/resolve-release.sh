@@ -273,7 +273,7 @@ for key in $(jq -r '.assets | keys_unsorted[]' "$manifest"); do
 		}
 	fi
 
-	# Renderers that read a dist directory (phux) expect this sidecar layout.
+	# Renderers that read a dist directory expect this sidecar layout.
 	printf '%s  %s\n' "$digest" "$name" > "$dist/$name.sha256"
 
 	emit "${key}_NAME=$name"

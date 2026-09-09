@@ -24,7 +24,6 @@ check() {
 # The per-tool event types the source repositories already send must keep
 # working, so repositories can move to tap-release on their own schedule.
 check "legacy per-tool dispatch (phui-release)" '{"tool":["phui"]}'         phui-release "" ""
-check "legacy per-tool dispatch (phux-cockpit)" '{"tool":["phux-cockpit"]}' phux-cockpit-release "" ""
 check "generic dispatch with a payload"         '{"tool":["phbv"]}'         tap-release phbv ""
 check "generic dispatch with no payload"        "$ALL"                      tap-release "" ""
 check "manual run with an input"                '{"tool":["token-tach"]}'   "" "" token-tach

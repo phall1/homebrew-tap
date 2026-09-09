@@ -5,7 +5,7 @@ name: Update packages
 # copy, and nothing here to remember to update.
 #
 # It listens for the per-tool dispatch event types the source repositories
-# already send (phui-release, phux-release, …) as well as a generic
+# already send (phui-release, token-tach-release, …) as well as a generic
 # tap-release, so repositories can migrate to the generic one whenever they
 # like and instant updates never stop working in the meantime.
 
@@ -15,8 +15,6 @@ on:
       - tap-release
       - phbv-release
       - phui-release
-      - phux-release
-      - phux-cockpit-release
       - token-tach-release
   workflow_dispatch:
     inputs:

@@ -70,8 +70,7 @@ Two files, no YAML:
    given as `$1`. Test presence of an optional asset with `${KEY_SHA256:-}`.
    Renderers also get `$DIST` (the downloaded artifacts, each with a
    `.sha256` beside it) and `$RELEASE_JSON` (the raw release payload) for
-   anything more involved — `phux-cockpit` reads the release body to decide
-   whether the build was notarized.
+   package-specific rendering policy.
 
 That is all. The scheduled matrix, the dispatch routing, and CI pick the package
 up from the manifest.
