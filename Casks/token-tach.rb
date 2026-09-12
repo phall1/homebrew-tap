@@ -18,19 +18,17 @@ cask "token-tach" do
   app "Token Tach.app", target: "token-tach.app"
   binary "#{staged_path}/token-tach-shim", target: "token-tach"
 
-  preflight do
-    shim = staged_path/"token-tach-shim"
-    shim.write <<~SH
+  preflight_steps do
+    write_file "token-tach-shim", <<~SH
       #!/bin/sh
-      exec "#{appdir}/token-tach.app/Contents/MacOS/token-tach" "$@"
+      exec "{{appdir}}/token-tach.app/Contents/MacOS/token-tach" "$@"
     SH
-    shim.chmod 0755
+    set_permissions "token-tach-shim", "0755"
   end
 
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/token-tach.app"],
-                   sudo: false
+  postflight_steps do
+    run "/usr/bin/xattr",
+        args: ["-dr", "com.apple.quarantine", "{{appdir}}/token-tach.app"]
   end
 
   zap trash: [

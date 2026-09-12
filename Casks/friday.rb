@@ -18,10 +18,9 @@ cask "friday" do
 
   app "Friday.app"
 
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/Friday.app"],
-                   sudo: false
+  postflight_steps do
+    run "/usr/bin/xattr",
+        args: ["-dr", "com.apple.quarantine", "{{appdir}}/Friday.app"]
   end
 
   uninstall quit:       "com.phall.friday",
