@@ -15,7 +15,7 @@ cask "token-tach" do
 
   depends_on macos: :big_sur
 
-  app "token-tach.app"
+  app "Token Tach.app", target: "token-tach.app"
   binary "#{staged_path}/token-tach-shim", target: "token-tach"
 
   preflight do
