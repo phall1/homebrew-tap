@@ -10,21 +10,21 @@ class Phui < Formula
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/phall1/phui/releases/download/v0.18.1/phui-darwin-arm64.tar.gz"
-      sha256 "f219bb03c159ec17299dbd22b0dca91f0b3bd4a08d0406c6750b3b0ac6c56f37"
+      url "https://github.com/phall1/phui/releases/download/v0.18.2/phui-darwin-arm64.tar.gz"
+      sha256 "4a9ec34a3d8c9f95416691da43fb78c26bf0074fc2f5493e3eca55f72234e9c1"
     else
-      url "https://github.com/phall1/phui/releases/download/v0.18.1/phui-darwin-x64.tar.gz"
-      sha256 "7163b194b84e38db22d3674fb674f4cd35e85544974f6e54f65716f31f5257d5"
+      url "https://github.com/phall1/phui/releases/download/v0.18.2/phui-darwin-x64.tar.gz"
+      sha256 "2369335318a52e94fe9240a30c894630de7ea1a0fb1d5d72d5c1aff16ae5e601"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
-      url "https://github.com/phall1/phui/releases/download/v0.18.1/phui-linux-arm64.tar.gz"
-      sha256 "785e48da1eafc2bfc1c66cc528f7ab50ed7a5ec44093ceec76e2316f4abe49ad"
+      url "https://github.com/phall1/phui/releases/download/v0.18.2/phui-linux-arm64.tar.gz"
+      sha256 "0a284a7f79f6b80977835ebbdecbb6b4971837fd5b0d100cb62f19afde4a61fd"
     else
-      url "https://github.com/phall1/phui/releases/download/v0.18.1/phui-linux-x64.tar.gz"
-      sha256 "b8b91967ae90ccda0e3bcb53544bcf2d92559341240af24e74331023fea86989"
+      url "https://github.com/phall1/phui/releases/download/v0.18.2/phui-linux-x64.tar.gz"
+      sha256 "925bb6814dbe771914be8b50a18fdfa62b5a02262479524af1c811eca75b412f"
     end
   end
 
